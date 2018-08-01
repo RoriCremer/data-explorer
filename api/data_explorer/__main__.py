@@ -168,7 +168,7 @@ def _get_field_type(es, field_name):
         mapping = es.indices.get_field_mapping(
             fields=field_name,
             index=app.app.config['INDEX_NAME'],
-            doc_type='type')
+            doc_type='doc')
     except TransportError as e:
         if 'index_not_found_exception' in e.error:
             app.app.logger.error('Index %s not found at %s' %
@@ -186,7 +186,7 @@ def _get_field_type(es, field_name):
 
     # If field_name is "a.b.c", last_part is "c".
     last_part = field_name.split('.')[len(field_name.split('.')) - 1]
-    return mapping[app.app.config['INDEX_NAME']]['mappings']['type'][
+    return mapping[app.app.config['INDEX_NAME']]['mappings']['doc'][
         field_name]['mapping'][last_part]['type']
 
 
@@ -297,7 +297,7 @@ def init():
     _wait_elasticsearch_healthy()
 
     app.app.config['DATASET_NAME'] = _get_dataset_name()
-    app.app.config['INDEX_NAME'] = _convert_to_index_name(_get_dataset_name())
+    app.app.config['INDEX_NAME'] = 'browser_files_dev'
     app.app.config['UI_FACETS'] = _get_ui_facets()
     app.app.config['ELASTICSEARCH_FACETS'] = _get_es_facets()
     app.app.config['TABLE_NAMES'] = _get_table_names()
