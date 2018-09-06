@@ -18,6 +18,16 @@
   color: gray;
 }
 
+.facetValue {
+  height: 32px;
+  padding-left: 0px;
+}
+
+###################333
+.facetValueCheckbox {
+  width: unset;
+}
+
 .facetValueName {
   float: left;
   text-align: left;

@@ -1,9 +1,11 @@
 import "./FacetCard.css";
 
 import React, { Component } from "react";
-import { Card } from "material-ui/Card";
-import { List, ListItem } from "material-ui/List";
-import { Checkbox } from "material-ui";
+import Card from "@material-ui/core/Card";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemText from "@material-ui/core/ListItemText";
+import Checkbox from "@material-ui/core/Checkbox";
 
 class FacetCard extends Component {
   constructor(props) {
@@ -35,20 +37,24 @@ class FacetCard extends Component {
     const facetValues = this.props.facet.values.map(facetValue => (
       <ListItem
         key={facetValue.name}
-        leftCheckbox={
-          <Checkbox
-            onCheck={(event, isInputChecked) =>
-              this.onValueCheck(facetValue, isInputChecked)
-            }
-          />
-        }
-        primaryText={
-          <div className={this.isDimmed(facetValue) ? " grayText" : ""}>
-            <div className="facetValueName">{facetValue.name}</div>
-            <div className="facetValueCount">{facetValue.count}</div>
-          </div>
-        }
-      />
+        dense
+        className="facetValue"
+      >
+        <Checkbox
+          classes="facetValueCheck"
+          onChange={(event, isInputChecked) =>
+            this.onValueCheck(facetValue, isInputChecked)
+          }
+        />
+        <ListItemText
+          primary={
+            <div className={this.isDimmed(facetValue) ? " grayText" : ""}>
+              <div className="facetValueName">{facetValue.name}</div>
+              <div className="facetValueCount">{facetValue.count}</div>
+            </div>
+          }
+        />
+      </ListItem>
     ));
     return (
       <Card className="facetCard">
