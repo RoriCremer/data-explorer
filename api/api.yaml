@@ -1,178 +1,177 @@
-swagger: '2.0'
+openapi: 3.0.0
 info:
   title: Data Explorer Service
   description: API Service that reads from Elasticsearch.
   license:
     name: BSD
     url: 'http://opensource.org/licenses/BSD-3-Clause'
-  version: '0.0.1'
+  version: 0.0.1
 paths:
   /dataset:
     get:
-      description: Gets dataset information, such as name.
+      description: 'Gets dataset information, such as name.'
       responses:
-        200:
+        '200':
           description: Success
-          schema:
-            $ref: '#/definitions/DatasetResponse'
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/DatasetResponse'
       tags:
-        # Put in dataset_controller.py instead of default_controller.py.
         - Dataset
   /facets:
     get:
       description: Returns facets.
       parameters:
         - name: filter
-          # Unfortunately OpenAPI 2.0 doesn't allow objects in GET query
-          # parameters. So hardcode something like "Gender=female".
-          # TODO(#32): Investigate switching to OpenAPI 3.0.
           description: >
-            filter represents selected facet values. Elasticsearch query will
-            be run only over selected facet values. filter is an array of
-            strings, where each string has the format "facetName=facetValue".
-            Example url /facets?filter=Gender=female,Region=northwest,Region=southwest
+            filter represents selected facet values. Elasticsearch query will be
+            run only over selected facet values. filter is an array of strings,
+            where each string has the format "facetName=facetValue". Example url
+            /facets?filter=Gender=female,Region=northwest,Region=southwest
           in: query
-          type: array
-          # Default collectionFormat is csv. With csv, faceted search doesn't
-          # work when facet value has a comma. So switch to pipes; pipe in facet
-          # value is much more rare.
-          collectionFormat: pipes
-          items:
-            type: string
-        - name: extraFacets
-          description: extraFacets represents the fields selected from the field search box.
-            extraFacets is a list of Elasticsearch field names. In the returned
-            list of facets, the extra facets will come before the facets from ui.json.
-          in: query
-          collectionFormat: pipes
-          type: array
-          items:
-            type: string
-      responses:
-        200:
-          description: Success
           schema:
-            $ref: '#/definitions/FacetsResponse'
+            type: array
+            style: pipeDelimited
+            items:
+              type: string
+        - name: extraFacets
+          description: >-
+            extraFacets represents the fields selected from the field search
+            box. extraFacets is a list of Elasticsearch field names. In the
+            returned list of facets, the extra facets will come before the
+            facets from ui.json.
+          in: query
+          schema:
+            type: array
+            style: pipeDelimited
+            items:
+              type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/FacetsResponse'
       tags:
-        # Put in facets_controller.py instead of default_controller.py.
         - Facets
   /fields:
     get:
       description: Returns dataset fields for field search.
       responses:
-        200:
+        '200':
           description: Success
-          schema:
-            $ref: '#/definitions/FieldsResponse'
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/FieldsResponse'
       tags:
-        # Put in fields_controller.py instead of default_controller.py.
         - Fields
   /exportUrl:
-    # This is post because this is not idempotent; a GCS file is created.
     post:
       description: >
         Creates and returns a signed URL to a GCS zip file of JSON files. The
         JSON files represent entities to be exported to a Saturn workspace.
-        https://bvdp-saturn-prod.appspot.com/#import-data may be called with
-        the url parameter set to this url. For each JSON file,
-        https://rawls.dsde-prod.broadinstitute.org/#!/entities/create_entity
-        may be called with the JSON as the POST body.
-      parameters:
-        - name: "exportUrlRequest"
-          in: "body"
-          schema:
-            type: object
-            properties:
-              cohortName:
-                type: string
-              filter:
-                type: array
-                # Default collectionFormat is csv. With csv, faceted search doesn't
-                # work when facet value has a comma. So switch to pipes; pipe in facet
-                # value is much more rare.
-                collectionFormat: pipes
-                items:
-                  type: string
+        https://bvdp-saturn-prod.appspot.com/#import-data may be called with the
+        url parameter set to this url. For each JSON file,
+        https://rawls.dsde-prod.broadinstitute.org/#!/entities/create_entity may
+        be called with the JSON as the POST body.
       responses:
-        200:
+        '200':
           description: Success
-          schema:
-            $ref: '#/definitions/ExportUrlResponse'
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ExportUrlResponse'
       tags:
-        # Put in export_url_controller.py instead of default_controller.py.
         - ExportUrl
-definitions:
-  DatasetResponse:
-    description: "Dataset information."
-    properties:
-      name:
-        type: string
-      enableFieldSearch:
-        type: boolean
-  FacetsResponse:
-    description: "Results from a faceted search."
-    properties:
-      facets:
-        type: array
-        items:
-          $ref: '#/definitions/Facet'
-      count:
-        type: integer
-        description: >
-          Number of entities represented by current facet selection. For
-          example, this could be 40, representing 40 people.
-  Facet:
-    description: >
-      A facet. For example, the Gender facet would include the facet name
-      "Gender", as well as counts for all possible values.
-    properties:
-      name:
-        type: string
-        description: Facet name, for example, "Gender".
-      description:
-        type: string
-        description: Optional facet description.
-      values:
-        type: array
-        items:
-          $ref: '#/definitions/FacetValue'
-  FacetValue:
-    description: A facet value, for example, "Male"/34.
-    properties:
-      name:
-        type: string
-        description: Facet value name, for example, "Male".
-      count:
-        type: integer
-        description: Facet value count.
-  ExportUrlResponse:
-    description: "Information for sending data to Saturn"
-    properties:
-      url:
-        type: string
-        description: "URL-encoded signed URL of GCS file containing entities to export."
-      authorization_domain:
-        type: string
-        description: "Optional FireCloud authorization domain"
-  FieldsResponse:
-    description: Dataset fields for field search.
-    properties:
-      fields:
-        type: array
-        items:
-          $ref: '#/definitions/Field'
-  Field:
-    description: >
-      A field. For example, a BigQuery Gender column could include the field
-      name "Gender", description "Sex at birth" and elasticsearch field name
-      "project_id.dataset_id.table_name.Gender".
-    properties:
-      name:
-        type: string
-        description: Field name, for example, "Gender".
-      description:
-        type: string
-        description: Optional field description.
-      elasticsearch_name:
-        type: string
-        description: The Elasticsearch field name.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cohortName:
+                  type: string
+                filter:
+                  type: array
+                  style: pipeDelimited
+                  items:
+                    type: string
+components:
+  schemas:
+    DatasetResponse:
+      description: Dataset information.
+      properties:
+        name:
+          type: string
+        enableFieldSearch:
+          type: boolean
+    FacetsResponse:
+      description: Results from a faceted search.
+      properties:
+        facets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Facet'
+        count:
+          type: integer
+          description: >
+            Number of entities represented by current facet selection. For
+            example, this could be 40, representing 40 people.
+    Facet:
+      description: >
+        A facet. For example, the Gender facet would include the facet name
+        "Gender", as well as counts for all possible values.
+      properties:
+        name:
+          type: string
+          description: 'Facet name, for example, "Gender".'
+        description:
+          type: string
+          description: Optional facet description.
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/FacetValue'
+    FacetValue:
+      description: 'A facet value, for example, "Male"/34.'
+      properties:
+        name:
+          type: string
+          description: 'Facet value name, for example, "Male".'
+        count:
+          type: integer
+          description: Facet value count.
+    ExportUrlResponse:
+      description: Information for sending data to Saturn
+      properties:
+        url:
+          type: string
+          description: URL-encoded signed URL of GCS file containing entities to export.
+        authorization_domain:
+          type: string
+          description: Optional FireCloud authorization domain
+    FieldsResponse:
+      description: Dataset fields for field search.
+      properties:
+        fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/Field'
+    Field:
+      description: >
+        A field. For example, a BigQuery Gender column could include the field
+        name "Gender", description "Sex at birth" and elasticsearch field name
+        "project_id.dataset_id.table_name.Gender".
+      properties:
+        name:
+          type: string
+          description: 'Field name, for example, "Gender".'
+        description:
+          type: string
+          description: Optional field description.
+        elasticsearch_name:
+          type: string
+          description: The Elasticsearch field name.
