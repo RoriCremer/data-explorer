@@ -4,6 +4,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import Typography from '@material-ui/core/Typography';
 
 import * as Style from "libs/style"
 import "components/facets/FacetCard.css";
@@ -54,9 +55,9 @@ class FacetCard extends Component {
     const facetValues = this.props.facet.values.map(facetValue => (
       <ListItem
         classes={{ root: classes.root }}
+        style={{ padding: '0 0 0 0' }}
         key={facetValue.name}
         button
-        dense
         disableRipple
         onClick={(e) => this.onClick(facetValue.name)}
       >
@@ -64,7 +65,7 @@ class FacetCard extends Component {
           style={{ width:'24px', height:'24px' }}
           checked={this.state.selectedValues.includes(facetValue.name)}
         />
-        <ListItemText primary={
+        <ListItemText style={{ paddingRight: '0px' }} primary={
           <div className={this.isDimmed(facetValue) ? " grayText" : ""}>
             <div className="facetValueName">{facetValue.name}</div>
             <div className="facetValueCount">{facetValue.count}</div>
@@ -73,22 +74,22 @@ class FacetCard extends Component {
       </ListItem>
     ));
     const totalFacetValueCount = (
-      <span className="totalFacetValueCount">
+      <Typography className="totalFacetValueCount">
         {this.totalFacetValueCount}
-      </span>
+      </Typography>
     );
     return (
       <div className="facetCard" style={ Style.elements.card }>
           <div>
-            <span>{this.props.facet.name}</span>
-            {this.props.facet.name != "Samples Overview"
-              ? totalFacetValueCount
-              : null}
+            <Typography style={{ float: 'left' }} >
+              {this.props.facet.name}
+            </Typography>
+            {this.props.facet.name != "Samples Overview" ? totalFacetValueCount : null}
           </div>
-          <span className="facetDescription">
+          <Typography style={{ float: 'left' }} >
             {this.props.facet.description}
-          </span>
-        <List dense disablePadding>{facetValues}</List>
+          </Typography>
+        <List dense>{facetValues}</List>
       </div>
     );
   }
@@ -135,11 +136,9 @@ class FacetCard extends Component {
       isSelected = true;
       newValues.push(facetValue);
     }
-
     this.setState({ selectedValues: newValues });
     this.props.updateFacets(this.props.facet.es_field_name, facetValue, isSelected);
   }
-
 }
 
 export default withStyles(styles)(FacetCard);

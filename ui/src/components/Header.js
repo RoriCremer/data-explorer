@@ -8,7 +8,7 @@ function Header(props) {
   const totalCount = props.totalCount;
 
   return (
-    <AppBar position="static" style={{ backgroundColor: "#5aa6da" }}>
+    <AppBar position="static" style={{backgroundColor: "#5aa6da"}}>
       <Toolbar>
         <Typography className="datasetName" variant="headline" color="inherit" style={{ flexGrow: 1 }}>
           {datasetName}

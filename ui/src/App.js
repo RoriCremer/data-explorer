@@ -1,6 +1,7 @@
 import React, { Component } from "react";
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 
-import "App.css";
 import {
   ApiClient,
   DatasetApi,
@@ -13,8 +14,17 @@ import FacetsGrid from "components/facets/FacetsGrid";
 import FieldSearch from "components/FieldSearch";
 import Header from "components/Header";
 
+const theme = createMuiTheme({
+  typography: {
+    fontFamily: [
+      'Montserrat',
+      'sans-serif',
+    ].join(','),
+  },
+});
+
 const Disclaimer = (
-  <div style={{ margin: "20px" }}>
+  <Typography style={{ margin: "20px" }}>
     This dataset is publicly available for anyone to use under the terms
     provided by the dataset source (<a href="http://www.internationalgenome.org/data">
       http://www.internationalgenome.org/data
@@ -22,7 +32,7 @@ const Disclaimer = (
     from Verily Life Sciences, LLC. Verily Life Sciences, LLC disclaims all
     liability for any damages, direct or indirect, resulting from the use of the
     dataset.
-  </div>
+  </Typography>
 );
 
 class App extends Component {
@@ -93,28 +103,30 @@ class App extends Component {
       return <div />;
     } else {
       return (
-        <div className="app">
-          <Header
-            datasetName={this.state.datasetName}
-            totalCount={this.state.totalCount}
-          />
-          {this.state.enableFieldSearch && (
-            <FieldSearch
-              fields={this.state.fields}
-              handleChange={this.handleFieldSearchChange}
-              extraFacetsOptions={this.state.extraFacetsOptions}
+        <MuiThemeProvider theme={theme}>
+          <div style={{ margin: '20px' }} >
+            <Header
+              datasetName={this.state.datasetName}
+              totalCount={this.state.totalCount}
             />
-          )}
-          <FacetsGrid
-            updateFacets={this.updateFacets}
-            facets={this.state.facets}
-          />
-          <ExportFab
-            exportUrlApi={new ExportUrlApi(this.apiClient)}
-            filter={this.state.filter}
-          />
-          {this.state.datasetName == "1000 Genomes" ? Disclaimer : null}
-        </div>
+            {this.state.enableFieldSearch && (
+              <FieldSearch
+                fields={this.state.fields}
+                handleChange={this.handleFieldSearchChange}
+                extraFacetsOptions={this.state.extraFacetsOptions}
+              />
+            )}
+            <FacetsGrid
+              updateFacets={this.updateFacets}
+              facets={this.state.facets}
+            />
+            <ExportFab
+              exportUrlApi={new ExportUrlApi(this.apiClient)}
+              filter={this.state.filter}
+            />
+            {this.state.datasetName == "1000 Genomes" ? Disclaimer : null}
+          </div>
+        </MuiThemeProvider>
       );
     }
   }
