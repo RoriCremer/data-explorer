@@ -6,10 +6,29 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 
+import colors from "libs/colors"
 import * as Style from "libs/style"
-import "components/facets/FacetCard.css";
 
-const styles = theme => ({
+const styles = {
+  facetCard: {
+    ...Style.elements.card,
+    display: 'grid',
+    gridTemplateColumns: 'auto 100px',
+    gridTemplateRows: 'auto',
+  },
+  facetName: {
+color: 'red',
+    gridColumn: 1 / 2,
+    gridRow: 1 / 2,
+  },
+  facetTotalCount: {
+color: 'orange',
+    gridColumn: 2 / 3,
+    gridRow: 1 / 2,
+  },
+}
+
+const themeStyles = theme => ({
   root: {
     // Disable gray background on ListItem hover. It's not possible to inline
     // hover CSS
@@ -55,40 +74,44 @@ class FacetCard extends Component {
     const facetValues = this.props.facet.values.map(facetValue => (
       <ListItem
         classes={{ root: classes.root }}
-        style={{ padding: '0 0 0 0' }}
         key={facetValue.name}
         button
         disableRipple
         onClick={(e) => this.onClick(facetValue.name)}
       >
         <Checkbox
-          style={{ width:'24px', height:'24px' }}
           checked={this.state.selectedValues.includes(facetValue.name)}
         />
-        <ListItemText style={{ paddingRight: '0px' }} primary={
-          <div className={this.isDimmed(facetValue) ? " grayText" : ""}>
-            <div className="facetValueName">{facetValue.name}</div>
-            <div className="facetValueCount">{facetValue.count}</div>
+        <ListItemText primary={
+          <div style={this.isDimmed(facetValue) ? { color: colors.gray[3] } : {}}>
+            <div>{facetValue.name}</div>
+            <div>{facetValue.count}</div>
           </div>
         } />
       </ListItem>
     ));
     const totalFacetValueCount = (
-      <Typography className="totalFacetValueCount">
+      <Typography>
         {this.totalFacetValueCount}
       </Typography>
     );
+
     return (
-      <div className="facetCard" style={ Style.elements.card }>
-          <div>
-            <Typography style={{ float: 'left' }} >
-              {this.props.facet.name}
-            </Typography>
-            {this.props.facet.name != "Samples Overview" ? totalFacetValueCount : null}
-          </div>
-          <Typography style={{ float: 'left' }} >
-            {this.props.facet.description}
+      <div style={ styles.facetCard } >
+        <div>
+          <Typography style={ styles.facetName } >
+            {this.props.facet.name}
           </Typography>
+          { this.props.facet.name != "Samples Overview"
+            ? <Typography style={{ color: 'red' }} >
+                {totalFacetValueCount}
+              </Typography>
+            : null
+          }
+        </div>
+        <Typography>
+          {this.props.facet.description}
+        </Typography>
         <List dense>{facetValues}</List>
       </div>
     );
@@ -141,4 +164,4 @@ class FacetCard extends Component {
   }
 }
 
-export default withStyles(styles)(FacetCard);
+export default withStyles(themeStyles)(FacetCard);
