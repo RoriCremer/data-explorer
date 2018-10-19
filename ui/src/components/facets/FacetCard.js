@@ -17,14 +17,14 @@ const styles = {
     gridTemplateRows: 'auto',
   },
   facetName: {
-color: 'red',
     gridColumn: 1 / 2,
-    gridRow: 1 / 2,
   },
   facetTotalCount: {
-color: 'orange',
     gridColumn: 2 / 3,
-    gridRow: 1 / 2,
+    textAlign: 'right',
+  },
+  facetDescription: {
+    gridColumn: 1 / 3,
   },
 }
 
@@ -51,7 +51,7 @@ class FacetCard extends Component {
       selectedValues: []
     };
 
-    this.totalFacetValueCount = this.sumFacetValueCounts(
+    this.facetTotalCount = this.sumFacetValueCounts(
       this.props.facet.values,
       []
     );
@@ -61,7 +61,7 @@ class FacetCard extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.totalFacetValueCount = this.sumFacetValueCounts(
+    this.facetTotalCount = this.sumFacetValueCounts(
       nextProps.facet.values,
       this.state.selectedValues
     );
@@ -90,26 +90,20 @@ class FacetCard extends Component {
         } />
       </ListItem>
     ));
-    const totalFacetValueCount = (
-      <Typography>
-        {this.totalFacetValueCount}
-      </Typography>
-    );
 
     return (
       <div style={ styles.facetCard } >
-        <div>
-          <Typography style={ styles.facetName } >
-            {this.props.facet.name}
+        <Typography style={ styles.facetName } >
+          {this.props.facet.name}
+        </Typography>
+        { this.props.facet.name != "Samples Overview" ? (
+          <Typography style={ styles.facetTotalCount } >
+            {this.facetTotalCount}
           </Typography>
-          { this.props.facet.name != "Samples Overview"
-            ? <Typography style={{ color: 'red' }} >
-                {totalFacetValueCount}
-              </Typography>
-            : null
-          }
-        </div>
-        <Typography>
+        ) : (
+          null
+        )}
+        <Typography style={ styles.facetDescription } >
           {this.props.facet.description}
         </Typography>
         <List dense>{facetValues}</List>
