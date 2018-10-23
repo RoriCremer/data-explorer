@@ -13,32 +13,36 @@ const styles = {
   facetCard: {
     ...Style.elements.card,
     display: 'grid',
-    gridTemplateColumns: 'auto 100px',
-    gridTemplateRows: 'auto',
+    gridTemplateColumns: 'auto 50px',
   },
+  // By default, each div takes up one grid cell.
+  // Don't specify gridColumn, just use default of one cell.
   facetName: {
-    gridColumn: 1 / 2,
   },
   facetTotalCount: {
-    gridColumn: 2 / 3,
     textAlign: 'right',
   },
   facetDescription: {
-    gridColumn: 1 / 3,
   },
-}
-
-const themeStyles = theme => ({
-  root: {
-    // Disable gray background on ListItem hover. It's not possible to inline
-    // hover CSS
-    // (https://stackoverflow.com/questions/1033156/how-to-write-ahover-in-inline-css)
-    // so we have to do it this way.
+  facetItemUnderTotalCount: {
+  },
+  facetValueList: {
+    gridColumn: '1 / 3',
+    // This is a nested div, so need to specify a new grid.
+    display: 'grid',
+    gridTemplateColumns: '50px auto 50px',
+  },
+  facetValue: {
+    // Disable gray background on ListItem hover.
     '&:hover': {
       backgroundColor: 'unset',
     },
-  }
-});
+  },
+  facetValueCheckbox: {
+  },
+  facetValueCount: {
+  },
+}
 
 class FacetCard extends Component {
   constructor(props) {
@@ -73,40 +77,47 @@ class FacetCard extends Component {
     // facetValue is a dict, eg { name: "female", count: 1760 }
     const facetValues = this.props.facet.values.map(facetValue => (
       <ListItem
-        classes={{ root: classes.root }}
+        className={classes.facetValue}
         key={facetValue.name}
         button
         disableRipple
         onClick={(e) => this.onClick(facetValue.name)}
       >
+      <div className={classes.facetValueCheckbox}>
         <Checkbox
+          className={classes.facetValueCheckbox}
           checked={this.state.selectedValues.includes(facetValue.name)}
         />
-        <ListItemText primary={
+      </div>
+      <ListItemText
+        primary={
           <div style={this.isDimmed(facetValue) ? { color: colors.gray[3] } : {}}>
             <div>{facetValue.name}</div>
             <div>{facetValue.count}</div>
           </div>
-        } />
+        }
+        className={classes.facetValueCount}
+      />
       </ListItem>
     ));
 
     return (
       <div style={ styles.facetCard } >
-        <Typography style={ styles.facetName } >
+        <Typography className={classes.facetName} >
           {this.props.facet.name}
         </Typography>
         { this.props.facet.name != "Samples Overview" ? (
-          <Typography style={ styles.facetTotalCount } >
+          <Typography className={classes.facetTotalCount} >
             {this.facetTotalCount}
           </Typography>
         ) : (
           null
         )}
-        <Typography style={ styles.facetDescription } >
+        <Typography className={classes.facetDescription} >
           {this.props.facet.description}
         </Typography>
-        <List dense>{facetValues}</List>
+        <div className={classes.facetItemUnderTotalCount} />
+        <List dense className={classes.facetValueList} >{facetValues}</List>
       </div>
     );
   }
@@ -158,4 +169,4 @@ class FacetCard extends Component {
   }
 }
 
-export default withStyles(themeStyles)(FacetCard);
+export default withStyles(styles)(FacetCard);
