@@ -28,11 +28,12 @@ const styles = {
   },
   facetValueList: {
     gridColumn: '1 / 3',
+  },
+  facetValue: {
     // This is a nested div, so need to specify a new grid.
     display: 'grid',
     gridTemplateColumns: '50px auto 50px',
-  },
-  facetValue: {
+    padding: '0',
     // Disable gray background on ListItem hover.
     '&:hover': {
       backgroundColor: 'unset',
@@ -83,21 +84,19 @@ class FacetCard extends Component {
         disableRipple
         onClick={(e) => this.onClick(facetValue.name)}
       >
-      <div className={classes.facetValueCheckbox}>
         <Checkbox
           className={classes.facetValueCheckbox}
           checked={this.state.selectedValues.includes(facetValue.name)}
         />
-      </div>
-      <ListItemText
-        primary={
-          <div style={this.isDimmed(facetValue) ? { color: colors.gray[3] } : {}}>
-            <div>{facetValue.name}</div>
-            <div>{facetValue.count}</div>
-          </div>
-        }
-        className={classes.facetValueCount}
-      />
+        <ListItemText
+          primary={
+            <div style={this.isDimmed(facetValue) ? { color: colors.gray[3] } : {}}>
+              <div>{facetValue.name}</div>
+              <div>{facetValue.count}</div>
+            </div>
+          }
+          className={classes.facetValueCount}
+        />
       </ListItem>
     ));
 
