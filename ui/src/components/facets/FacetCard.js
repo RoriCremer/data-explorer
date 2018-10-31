@@ -33,6 +33,7 @@ const styles = {
     // This is a nested div, so need to specify a new grid.
     display: 'grid',
     gridTemplateColumns: '50px auto 50px',
+    justifyContent: 'stretch',
     padding: '0',
     // Disable gray background on ListItem hover.
     '&:hover': {
@@ -91,8 +92,14 @@ class FacetCard extends Component {
         <ListItemText
           primary={
             <div style={this.isDimmed(facetValue) ? { color: colors.gray[3] } : {}}>
-              <div>{facetValue.name}</div>
-              <div>{facetValue.count}</div>
+              {facetValue.name}
+            </div>
+          }
+        />
+        <ListItemText
+          primary={
+            <div style={this.isDimmed(facetValue) ? { color: colors.gray[3] } : {}}>
+              {facetValue.count}
             </div>
           }
           className={classes.facetValueCount}
