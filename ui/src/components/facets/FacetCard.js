@@ -43,6 +43,8 @@ const styles = {
   facetValueCheckbox: {
   },
   facetValueCount: {
+    padding: '0',
+    textAlign: 'right',
   },
 }
 
