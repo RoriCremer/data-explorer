@@ -4,8 +4,8 @@
          "GET"
       ],
       "origin":[
-         "https://bvdp-saturn-prod.appspot.com",
-         "https://bvdp-saturn-dev.appspot.com"
+         "https://app.terra.bio",
+         "https://app.terra.bio"
       ]
    }
 ]

@@ -26,7 +26,7 @@ import ApiClient from '../ApiClient';
 export default class ExportUrlResponse {
     /**
     * Constructs a new <code>ExportUrlResponse</code>.
-    * Information for sending data to Saturn
+    * Information for sending data to Terra
     * @alias module:model/ExportUrlResponse
     * @class
     */
