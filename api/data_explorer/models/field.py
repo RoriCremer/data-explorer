@@ -15,32 +15,34 @@ class Field(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, name=None, description=None,
-                 elasticsearch_name=None):  # noqa: E501
+    def __init__(self,
+                 display_text=None,
+                 elasticsearch_name=None,
+                 is_facet_value=None):  # noqa: E501
         """Field - a model defined in Swagger
 
-        :param name: The name of this Field.  # noqa: E501
-        :type name: str
-        :param description: The description of this Field.  # noqa: E501
-        :type description: str
+        :param display_text: The display_text of this Field.  # noqa: E501
+        :type display_text: str
         :param elasticsearch_name: The elasticsearch_name of this Field.  # noqa: E501
         :type elasticsearch_name: str
+        :param is_facet_value: The is_facet_value of this Field.  # noqa: E501
+        :type is_facet_value: bool
         """
         self.swagger_types = {
-            'name': str,
-            'description': str,
-            'elasticsearch_name': str
+            'display_text': str,
+            'elasticsearch_name': str,
+            'is_facet_value': bool
         }
 
         self.attribute_map = {
-            'name': 'name',
-            'description': 'description',
-            'elasticsearch_name': 'elasticsearch_name'
+            'display_text': 'display_text',
+            'elasticsearch_name': 'elasticsearch_name',
+            'is_facet_value': 'is_facet_value'
         }
 
-        self._name = name
-        self._description = description
+        self._display_text = display_text
         self._elasticsearch_name = elasticsearch_name
+        self._is_facet_value = is_facet_value
 
     @classmethod
     def from_dict(cls, dikt):
@@ -54,50 +56,27 @@ class Field(Model):
         return util.deserialize_model(dikt, cls)
 
     @property
-    def name(self):
-        """Gets the name of this Field.
+    def display_text(self):
+        """Gets the display_text of this Field.
 
-        Field name, for example, \"Gender\".  # noqa: E501
+        The text displayed in the dropdown.  # noqa: E501
 
-        :return: The name of this Field.
+        :return: The display_text of this Field.
         :rtype: str
         """
-        return self._name
+        return self._display_text
 
-    @name.setter
-    def name(self, name):
-        """Sets the name of this Field.
+    @display_text.setter
+    def display_text(self, display_text):
+        """Sets the display_text of this Field.
 
-        Field name, for example, \"Gender\".  # noqa: E501
+        The text displayed in the dropdown.  # noqa: E501
 
-        :param name: The name of this Field.
-        :type name: str
+        :param display_text: The display_text of this Field.
+        :type display_text: str
         """
 
-        self._name = name
-
-    @property
-    def description(self):
-        """Gets the description of this Field.
-
-        Optional field description.  # noqa: E501
-
-        :return: The description of this Field.
-        :rtype: str
-        """
-        return self._description
-
-    @description.setter
-    def description(self, description):
-        """Sets the description of this Field.
-
-        Optional field description.  # noqa: E501
-
-        :param description: The description of this Field.
-        :type description: str
-        """
-
-        self._description = description
+        self._display_text = display_text
 
     @property
     def elasticsearch_name(self):
@@ -121,3 +100,26 @@ class Field(Model):
         """
 
         self._elasticsearch_name = elasticsearch_name
+
+    @property
+    def is_facet_value(self):
+        """Gets the is_facet_value of this Field.
+
+        If this is a facet or a facet value field.  # noqa: E501
+
+        :return: The is_facet_value of this Field.
+        :rtype: bool
+        """
+        return self._is_facet_value
+
+    @is_facet_value.setter
+    def is_facet_value(self, is_facet_value):
+        """Sets the is_facet_value of this Field.
+
+        If this is a facet or a facet value field.  # noqa: E501
+
+        :param is_facet_value: The is_facet_value of this Field.
+        :type is_facet_value: bool
+        """
+
+        self._is_facet_value = is_facet_value

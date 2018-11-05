@@ -169,12 +169,12 @@ definitions:
       name "Gender", description "Sex at birth" and elasticsearch field name
       "project_id.dataset_id.table_name.Gender".
     properties:
-      name:
+      display_text:
         type: string
-        description: Field name, for example, "Gender".
-      description:
-        type: string
-        description: Optional field description.
+        description: The text displayed in the dropdown.
       elasticsearch_name:
         type: string
         description: The Elasticsearch field name.
+      is_facet_value:
+        type: boolean
+        description: If this is a facet or a facet value field.

@@ -30,9 +30,10 @@ class App extends Component {
     super(props);
     this.state = {
       datasetName: "",
-      enableFieldSearch: false,
-      facets: null,
+      // A dict of es_field_name, the facet card data.
+      facets: new Map(),
       totalCount: null,
+      // An array of strings, each of the form es_field_name=value.
       filter: null,
       // These are all fields which can be searched using field search.
       // This is an array of react-select options. A react-select option
@@ -40,8 +41,8 @@ class App extends Component {
       // https://github.com/JedWatson/react-select#installation-and-usage
       fields: [],
       // These represent fields selected via field search.
-      // This is an array of react-select options.
-      extraFacetsOptions: []
+      // This is an array of elasticsearch field names.
+      extraFacetNames: []
     };
 
     this.apiClient = new ApiClient();
@@ -53,7 +54,7 @@ class App extends Component {
         // TODO(alanhwang): Redirect to an error page
       } else {
         this.setState({
-          facets: data.facets,
+          facets: this.getFacetMap(data.facets),
           totalCount: data.count
         });
       }
@@ -66,17 +67,9 @@ class App extends Component {
       } else {
         this.setState({
           fields: data.fields.map(field => {
-            if (field.description) {
-              return {
-                label: field.name + " - " + field.description,
-                value: field.elasticsearch_name,
-                chipLabel: field.name
-              };
-            }
             return {
-              label: field.name,
-              value: field.elasticsearch_name,
-              chipLabel: field.name
+              label: field.display_text,
+              value: field.elasticsearch_name
             };
           })
         });
@@ -87,6 +80,7 @@ class App extends Component {
     this.filterMap = new Map();
     this.updateFacets = this.updateFacets.bind(this);
     this.handleFieldSearchChange = this.handleFieldSearchChange.bind(this);
+    this.chipsFromFilter = this.chipsFromFilter.bind(this);
   }
 
   render() {
@@ -103,11 +97,11 @@ class App extends Component {
           <FieldSearch
             fields={this.state.fields}
             handleChange={this.handleFieldSearchChange}
-            extraFacetsOptions={this.state.extraFacetsOptions}
+            chips={this.chipsFromFilter(this.state.filter)}
           />
           <FacetsGrid
             updateFacets={this.updateFacets}
-            facets={this.state.facets}
+            facets={Array.from(this.state.facets.values())}
           />
           <ExportFab
             exportUrlApi={new ExportUrlApi(this.apiClient)}
@@ -139,30 +133,28 @@ class App extends Component {
     datasetApi.datasetGet(datasetCallback);
   }
 
-  handleFieldSearchChange(extraFacetsOptions) {
-    // Remove deleted facets from filter, if necessary.
-    // - User adds extra facet A
-    // - User checks A_val in facet A. filter is now "A=A_val"
-    // - In FieldSearch component, user deletes chip for facet A. We need to
-    // remove "A=A_val" from filter.
-    let deletedFacets = this.state.extraFacetsOptions.filter(
-      x => !extraFacetsOptions.includes(x)
-    );
-    deletedFacets.forEach(removed => {
-      if (this.filterMap.get(removed.label) !== undefined) {
-        this.filterMap.delete(removed.label);
-      }
+  getFacetMap(facets) {
+    var facetMap = new Map();
+    facets.forEach(function(facet) {
+      facetMap.set(facet.es_field_name, facet);
     });
+    return facetMap;
+  }
 
+  handleFieldSearchChange(extraFacetsOptions) {
     let filterArray = this.filterMapToArray(this.filterMap);
+    let extraFacetNames = this.state.extraFacetNames;
+    extraFacetNames = extraFacetNames.concat(
+      extraFacetsOptions.map(option => option.value)
+    );
     this.setState({
-      extraFacetsOptions: extraFacetsOptions,
+      extraFacetNames: extraFacetNames,
       filter: filterArray
     });
     this.facetsApi.facetsGet(
       {
         filter: filterArray,
-        extraFacets: extraFacetsOptions.map(option => option.value)
+        extraFacets: extraFacetNames
       },
       this.facetsCallback
     );
@@ -193,11 +185,10 @@ class App extends Component {
 
     let filterArray = this.filterMapToArray(this.filterMap);
     this.setState({ filter: filterArray });
-
     this.facetsApi.facetsGet(
       {
         filter: filterArray,
-        extraFacets: this.state.extraFacetsOptions.map(option => option.value)
+        extraFacets: this.state.extraFacetNames
       },
       this.facetsCallback
     );
@@ -232,6 +223,20 @@ class App extends Component {
       }
     });
     return filterArray;
+  }
+
+  chipsFromFilter(filter) {
+    if (filter == null) {
+      return [];
+    }
+    let chips = [];
+    for (let i = 0; i < filter.length; i++) {
+      let res = filter[i].split("=");
+      let facet_name = this.state.facets.get(res[0]).name;
+      let facet_value = res[1];
+      chips.push({ label: facet_name + "=" + facet_value });
+    }
+    return chips;
   }
 }
 
